@@ -1,8 +1,10 @@
 GITHUB_REPO="tiborsapi/deploy_furniture_project"
 WORKDIR="/home/kisstibor/pr"
 STATEFILE="$WORKDIR/deployed_commits.txt"
-
+LOGFILE="$WORKDIR/chronejob.log"
 mkdir -p "$WORKDIR"
+
+echo "Running at $(date)" >> "$LOGFILE"
 
 for pr in $(gh pr list --repo tiborsapi/deploy_furniture_project --json number --jq '.[].number'); do
   branch=$(gh pr view $pr --repo tiborsapi/deploy_furniture_project --json headRefName --jq '.headRefName')
@@ -20,12 +22,10 @@ for pr in $(gh pr list --repo tiborsapi/deploy_furniture_project --json number -
     continue
   fi
 
-  echo "Deploying PR #$pr (backend=$commitbe frontend=$commitfe)"
+  echo "Deploying PR #pr-$pr (backend=$commitbe frontend=$commitfe)"
 
   # Record deployment
   echo "$key" >> "$STATEFILE"
-
-  echo "Processing PR #pr-$pr"
 
   # Create isolated folder for PR
   PRDIR="$WORKDIR/pr-$pr"
